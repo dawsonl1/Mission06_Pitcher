@@ -1,0 +1,24 @@
+Step A: ASP.NET decides it needs HomeController.
+Step B: It tries to create HomeController. It sees the constructor needs MovieRecordContext.
+Step C: It looks at Program.cs and finds the AddDbContext “recipe”.
+Step D: That recipe reads appsettings.json “Default” connection string (Movies.sqlite).
+Step E: ASP.NET builds the options object with “use SQLite + Movies.sqlite”.
+Step F: ASP.NET creates MovieRecordContext by calling your constructor:
+new MovieRecordContext(options)
+Step G: Your constructor forwards options to DbContext using base(options). (this is like the car forwarding gas to the engine)
+Step H: ASP.NET passes the finished MovieRecordContext into HomeController.
+Step I: Your controller stores it in _context and can now do:
+_context.MovieRecords.Add(…)
+_context.SaveChanges()
+_context.MovieRecords.ToList()
+
+Clean cutoff you can memorize
+    appsettings.json: stores database path text
+    Program.cs AddDbContext: registers how to build the context and which database to use
+    MovieRecordContext constructor: receives the prepared settings and forwards them to DbContext
+    HomeController: uses the context to read/write tables
+
+How to work with them in practice:
+    If you want to query/save data: use _context in controller actions.
+    If you want to add a new table: add a new model class + add DbSet in MovieRecordContext.
+    If you want to change the database file name/location: change appsettings.json (the Default value).
